@@ -1,0 +1,11 @@
+[build]
+  publish = "."
+  command = "echo 'Static site, no build needed'"
+
+[build.environment]
+  NPM_FLAGS = "--ignore-scripts"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
