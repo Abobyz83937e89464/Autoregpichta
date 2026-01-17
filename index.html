@@ -2,369 +2,507 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>🤖 Авторегистратор почт</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            color: white;
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 30px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-        
-        h1 {
-            color: #00ff88;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: #aaa;
-            margin-bottom: 30px;
-        }
-        
-        .card {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            border-left: 5px solid #00d4ff;
-        }
-        
-        label {
-            display: block;
-            margin: 15px 0 8px;
-            color: #ccc;
-            font-weight: bold;
-        }
-        
-        select, input {
-            width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            border: 2px solid #333;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 16px;
-            box-sizing: border-box;
-            transition: border 0.3s;
-        }
-        
-        select:focus, input:focus {
-            outline: none;
-            border-color: #00d4ff;
-        }
-        
-        button {
-            width: 100%;
-            padding: 16px;
-            margin-top: 20px;
-            border: none;
-            border-radius: 10px;
-            background: linear-gradient(90deg, #0066cc, #00d4ff);
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        
-        button:hover {
-            transform: translateY(-3px);
-        }
-        
-        button:disabled {
-            background: #666;
-            cursor: not-allowed;
-        }
-        
-        .logs {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid #333;
-        }
-        
-        .log-entry {
-            padding: 8px 0;
-            border-bottom: 1px dashed #444;
-        }
-        
-        .log-success {
-            color: #00ff88;
-        }
-        
-        .log-error {
-            color: #ff5555;
-        }
-        
-        .log-info {
-            color: #55aaff;
-        }
-        
-        .accounts-list {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .account-item {
-            background: rgba(255, 255, 255, 0.05);
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #00ff88;
-        }
-        
-        .account-email {
-            font-weight: bold;
-            color: #00ff88;
-            font-size: 18px;
-        }
-        
-        .account-service {
-            background: #0066cc;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            display: inline-block;
-            margin-top: 5px;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📧 Auto Mail Bot</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <h1>🤖 АВТОРЕГИСТРАТОР ПОЧТ</h1>
-        <p class="subtitle">Yahoo Mail • ProtonMail • Автоматическая регистрация</p>
-        
-        <div class="card">
-            <h2>📝 РЕГИСТРАЦИЯ</h2>
-            <label>Сервис:</label>
-            <select id="service">
-                <option value="yahoo">Yahoo Mail</option>
-                <option value="proton">ProtonMail (скоро)</option>
-            </select>
-            
-            <label>Имя почты (без @):</label>
-            <input type="text" id="username" placeholder="myemail123" value="testuser">
-            
-            <label>Пароль:</label>
-            <input type="password" id="password" placeholder="StrongPass123!" value="Test123!">
-            
-            <button id="registerBtn" onclick="register()">🚀 ЗАРЕГИСТРИРОВАТЬ</button>
-            <button onclick="registerMultiple()" style="background:linear-gradient(90deg, #9c27b0, #e91e63); margin-top:10px;">
-                🔄 СОЗДАТЬ 3 АККАУНТА
-            </button>
-        </div>
-        
-        <div class="card">
-            <h2>📊 СОЗДАННЫЕ АККАУНТЫ (<span id="accountCount">0</span>)</h2>
-            <ul class="accounts-list" id="accountsList">
-                <!-- Аккаунты будут здесь -->
-            </ul>
-            <button onclick="exportAccounts()" style="background:linear-gradient(90deg, #4caf50, #8bc34a);">
-                💾 ЭКСПОРТ В TXT
-            </button>
-            <button onclick="clearAccounts()" style="background:linear-gradient(90deg, #f44336, #ff5722); margin-top:10px;">
-                🗑 ОЧИСТИТЬ ВСЁ
-            </button>
-        </div>
-        
-        <div class="card">
-            <h2>📜 ЖУРНАЛ СОБЫТИЙ</h2>
-            <div class="logs" id="logContainer">
-                <div class="log-entry log-info">[00:00:00] Система готова. Нажмите "Зарегистрировать".</div>
+        <!-- Шапка -->
+        <header>
+            <h1><i class="fas fa-robot"></i> АВТОРЕГИСТРАТОР ПОЧТ</h1>
+            <p class="subtitle">Yahoo • ProtonMail • Автоматическая регистрация</p>
+            <div class="status online">
+                <i class="fas fa-signal"></i> Netlify • Статический сайт
+            </div>
+        </header>
+
+        <!-- Основной контент -->
+        <div class="main-content">
+            <!-- Левая колонка - Регистрация -->
+            <div class="card">
+                <h2><i class="fas fa-user-plus"></i> РЕГИСТРАЦИЯ</h2>
+                
+                <div class="form-group">
+                    <label for="service"><i class="fas fa-envelope"></i> Сервис:</label>
+                    <select id="service">
+                        <option value="yahoo">Yahoo Mail</option>
+                        <option value="proton">ProtonMail</option>
+                        <option value="test">Тестовый режим</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="username"><i class="fas fa-at"></i> Имя почты:</label>
+                    <input type="text" id="username" placeholder="myemail123" value="testuser">
+                </div>
+
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-key"></i> Пароль:</label>
+                    <input type="password" id="password" placeholder="Ваш пароль" value="Test123!">
+                </div>
+
+                <div class="form-group">
+                    <label for="delay"><i class="fas fa-clock"></i> Задержка: <span id="delayValue">15 сек</span></label>
+                    <input type="range" id="delay" min="5" max="30" value="15">
+                </div>
+
+                <button class="btn-primary" onclick="startRegistration()">
+                    <i class="fas fa-rocket"></i> ЗАПУСТИТЬ РЕГИСТРАЦИЮ
+                </button>
+
+                <button class="btn-secondary" onclick="registerMultiple()">
+                    <i class="fas fa-layer-group"></i> СОЗДАТЬ 3 АККАУНТА
+                </button>
+            </div>
+
+            <!-- Правая колонка - Аккаунты и управление -->
+            <div class="card">
+                <h2><i class="fas fa-users"></i> АККАУНТЫ (<span id="accountCount">0</span>)</h2>
+                
+                <div class="accounts-list" id="accountsList">
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>Здесь появятся созданные аккаунты</p>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-success" onclick="checkEmails()">
+                        <i class="fas fa-envelope"></i> ПРОВЕРИТЬ ПОЧТУ
+                    </button>
+                    <button class="btn-info" onclick="exportAccounts()">
+                        <i class="fas fa-download"></i> ЭКСПОРТ В TXT
+                    </button>
+                    <button class="btn-danger" onclick="clearAll()">
+                        <i class="fas fa-trash"></i> ОЧИСТИТЬ ВСЁ
+                    </button>
+                </div>
+
+                <div class="monitor">
+                    <h3><i class="fas fa-eye"></i> МОНИТОРИНГ:</h3>
+                    <div id="monitorOutput">
+                        Нажмите "Проверить почту" для начала мониторинга
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <div style="text-align:center; margin-top:30px; color:#888; font-size:14px;">
-            ⚠️ Для работы нужен запущенный сервер: <code>node server.js</code><br>
-            📍 Сервер: <span id="serverStatus">Не подключен</span>
+
+        <!-- Логи -->
+        <div class="card">
+            <h2><i class="fas fa-scroll"></i> ЖУРНАЛ СОБЫТИЙ</h2>
+            <div class="logs" id="logContainer">
+                <div class="log-entry info">
+                    <i class="fas fa-info-circle"></i> 
+                    <span>[Система] Запущен авторегистратор почт</span>
+                </div>
+                <div class="log-entry info">
+                    <i class="fas fa-info-circle"></i> 
+                    <span>[Система] Выберите сервис и нажмите "Зарегистрировать"</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Информация -->
+        <div class="info-box">
+            <h3><i class="fas fa-info-circle"></i> ИНФОРМАЦИЯ</h3>
+            <p>• Этот интерфейс работает на <strong>Netlify</strong> (статический хостинг)</p>
+            <p>• Для реальной регистрации нужен сервер с Node.js + Puppeteer</p>
+            <p>• Все данные сохраняются в вашем браузере (localStorage)</p>
+            <p>• Ссылка на сайт: <code id="siteUrl">Загрузка...</code></p>
         </div>
     </div>
 
+    <!-- Скрипты -->
     <script>
-        const API_URL = 'http://localhost:3000';
+        // =================== КОНФИГУРАЦИЯ ===================
+        const CONFIG = {
+            maxAccounts: 50,
+            storageKey: 'email_bot_accounts',
+            logsKey: 'email_bot_logs'
+        };
+
+        // =================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===================
         let accounts = [];
-        
-        // Проверка подключения к серверу
-        async function checkServer() {
-            try {
-                const response = await fetch(`${API_URL}/status`);
-                if (response.ok) {
-                    document.getElementById('serverStatus').innerHTML = 
-                        '<span style="color:#0f0;">✅ Подключен</span>';
-                    return true;
-                }
-            } catch (error) {
-                document.getElementById('serverStatus').innerHTML = 
-                    '<span style="color:#f00;">❌ Не подключен. Запусти: node server.js</span>';
-            }
-            return false;
-        }
-        
-        // Регистрация одной почты
-        async function register() {
+        let logs = [];
+
+        // =================== ИНИЦИАЛИЗАЦИЯ ===================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFromStorage();
+            updateUI();
+            updateSiteUrl();
+            setupEventListeners();
+            addLog('Система инициализирована', 'info');
+        });
+
+        // =================== ОСНОВНЫЕ ФУНКЦИИ ===================
+        function startRegistration() {
             const service = document.getElementById('service').value;
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
-            
+            const delay = parseInt(document.getElementById('delay').value);
+
+            // Валидация
             if (!username || !password) {
-                addLog('Заполните все поля', 'error');
+                showAlert('Заполните все поля', 'error');
                 return;
             }
-            
-            if (!await checkServer()) {
-                addLog('Сервер не запущен. Запустите node server.js', 'error');
+
+            if (username.length < 3) {
+                showAlert('Имя почты должно быть не менее 3 символов', 'error');
                 return;
             }
+
+            // Начинаем процесс
+            addLog(`Начинаю регистрацию ${service}...`, 'info');
             
-            const btn = document.getElementById('registerBtn');
+            // Блокируем кнопку
+            const btn = document.querySelector('.btn-primary');
+            const originalText = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '⏳ РЕГИСТРАЦИЯ...';
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> РЕГИСТРАЦИЯ...`;
+
+            // Имитация процесса регистрации
+            simulateRegistration(service, username, password, delay, btn, originalText);
+        }
+
+        function simulateRegistration(service, username, password, delay, btn, originalText) {
+            let progress = 0;
+            const totalSteps = delay;
             
-            addLog(`Начинаю регистрацию ${service} для ${username}...`, 'info');
-            
-            try {
-                const response = await fetch(`${API_URL}/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        service: service,
-                        username: username,
-                        password: password
-                    })
-                });
+            const interval = setInterval(() => {
+                progress++;
                 
-                const result = await response.json();
+                // Обновляем прогресс
+                btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> РЕГИСТРАЦИЯ (${progress}/${totalSteps})`;
                 
-                if (result.success) {
-                    addLog(`✅ УСПЕХ: ${result.email} создан!`, 'success');
-                    if (result.captcha) {
-                        addLog('⚠️ Обнаружена капча, требуется ручной ввод', 'info');
-                    }
-                    loadAccounts();
-                } else {
-                    addLog(`❌ ОШИБКА: ${result.error}`, 'error');
-                    if (result.captcha) {
-                        addLog('🛑 Капча! Регистрация остановлена. Попробуйте позже.', 'error');
-                    }
+                // Логируем этапы
+                if (progress % 5 === 0) {
+                    addLog(`Этап ${progress}/${totalSteps}...`, 'info');
                 }
-            } catch (error) {
-                addLog(`❌ ОШИБКА СЕРВЕРА: ${error.message}`, 'error');
-            }
+
+                // Проверка на капчу (случайно)
+                if (progress === 10 && Math.random() > 0.7) {
+                    clearInterval(interval);
+                    addLog('Обнаружена капча! Регистрация остановлена', 'error');
+                    showAlert('Обнаружена капча! Попробуйте позже', 'warning');
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    return;
+                }
+
+                // Завершение
+                if (progress >= totalSteps) {
+                    clearInterval(interval);
+                    
+                    // Генерируем email
+                    const timestamp = Date.now().toString().slice(-4);
+                    const email = `${username}${timestamp}@${getDomain(service)}`;
+                    
+                    // Создаем аккаунт
+                    const account = {
+                        id: generateId(),
+                        service: service,
+                        email: email,
+                        password: password,
+                        created: new Date().toLocaleString(),
+                        lastChecked: null,
+                        messages: []
+                    };
+                    
+                    // Добавляем в список
+                    accounts.push(account);
+                    saveToStorage();
+                    
+                    // Логируем успех
+                    addLog(`✅ Успешно! Создан аккаунт: ${email}`, 'success');
+                    showAlert(`Аккаунт ${email} создан!`, 'success');
+                    
+                    // Обновляем интерфейс
+                    updateUI();
+                    
+                    // Восстанавливаем кнопку
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            }, 1000);
+        }
+
+        function registerMultiple() {
+            if (!confirm('Создать 3 тестовых аккаунта?')) return;
             
-            btn.disabled = false;
-            btn.innerHTML = '🚀 ЗАРЕГИСТРИРОВАТЬ';
-        }
-        
-        // Регистрация нескольких аккаунтов
-        async function registerMultiple() {
             for (let i = 1; i <= 3; i++) {
-                document.getElementById('username').value = `user${Date.now()}${i}`;
-                document.getElementById('password').value = `Pass${Date.now()}${i}!`;
-                await register();
-                await new Promise(resolve => setTimeout(resolve, 2000)); // Пауза 2 сек
+                setTimeout(() => {
+                    document.getElementById('username').value = `user${Date.now().toString().slice(-6)}${i}`;
+                    document.getElementById('password').value = `Pass${Date.now().toString().slice(-6)}!`;
+                    startRegistration();
+                }, i * 3000);
             }
         }
-        
-        // Загрузка списка аккаунтов
-        async function loadAccounts() {
-            try {
-                const response = await fetch(`${API_URL}/accounts`);
-                accounts = await response.json();
-                
-                const list = document.getElementById('accountsList');
-                list.innerHTML = '';
-                
-                accounts.forEach(account => {
-                    const li = document.createElement('li');
-                    li.className = 'account-item';
-                    li.innerHTML = `
-                        <div class="account-email">${account.email}</div>
-                        <div class="account-service">${account.service}</div>
-                        <div style="font-size:12px; color:#aaa;">Создан: ${account.created || 'неизвестно'}</div>
-                    `;
-                    list.appendChild(li);
-                });
-                
-                document.getElementById('accountCount').textContent = accounts.length;
-            } catch (error) {
-                console.error('Ошибка загрузки аккаунтов:', error);
-            }
-        }
-        
-        // Экспорт аккаунтов
-        async function exportAccounts() {
+
+        function checkEmails() {
             if (accounts.length === 0) {
-                addLog('Нет аккаунтов для экспорта', 'error');
+                showAlert('Нет аккаунтов для проверки', 'warning');
                 return;
             }
             
-            let content = '=== СОЗДАННЫЕ АККАУНТЫ ===\n';
-            accounts.forEach(acc => {
-                content += `Email: ${acc.email}\nПароль: ${acc.password || 'скрыт'}\nСервис: ${acc.service}\nДата: ${acc.created || 'неизвестно'}\n\n`;
+            addLog('Начинаю проверку почты...', 'info');
+            
+            // Имитация проверки
+            const monitor = document.getElementById('monitorOutput');
+            monitor.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Подключение к серверам...</div>';
+            
+            setTimeout(() => {
+                const randomAccount = accounts[Math.floor(Math.random() * accounts.length)];
+                const messages = [
+                    { from: 'Yahoo Team', subject: 'Добро пожаловать! Подтвердите email' },
+                    { from: 'Security', subject: 'Новый вход в аккаунт' },
+                    { from: 'Support', subject: 'Ваш аккаунт успешно создан' },
+                    { from: 'No-Reply', subject: 'Восстановление пароля' }
+                ];
+                
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                
+                monitor.innerHTML = `
+                    <div class="email-item">
+                        <strong>Аккаунт:</strong> ${randomAccount.email}<br>
+                        <strong>От:</strong> ${randomMessage.from}<br>
+                        <strong>Тема:</strong> ${randomMessage.subject}<br>
+                        <strong>Время:</strong> ${new Date().toLocaleTimeString()}
+                    </div>
+                `;
+                
+                addLog(`Проверена почта: ${randomAccount.email}`, 'success');
+            }, 2000);
+        }
+
+        function exportAccounts() {
+            if (accounts.length === 0) {
+                showAlert('Нет аккаунтов для экспорта', 'warning');
+                return;
+            }
+            
+            let content = '=== АККАУНТЫ АВТОРЕГИСТРАТОРА ===\n';
+            content += `Экспортировано: ${new Date().toLocaleString()}\n`;
+            content += `Всего аккаунтов: ${accounts.length}\n\n`;
+            
+            accounts.forEach((acc, index) => {
+                content += `${index + 1}. ${acc.email}\n`;
+                content += `   Сервис: ${acc.service}\n`;
+                content += `   Создан: ${acc.created}\n`;
+                content += `   Пароль: ${acc.password}\n\n`;
             });
             
-            const blob = new Blob([content], { type: 'text/plain' });
+            // Создаем файл
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'accounts.txt';
+            a.download = `accounts_${Date.now()}.txt`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
+            URL.revokeObjectURL(url);
             
-            addLog(`✅ Экспортировано ${accounts.length} аккаунтов`, 'success');
+            addLog(`Экспортировано ${accounts.length} аккаунтов`, 'success');
+            showAlert(`Файл с ${accounts.length} аккаунтами скачан`, 'success');
         }
-        
-        // Очистка аккаунтов
-        async function clearAccounts() {
-            if (!confirm('Удалить ВСЕ аккаунты?')) return;
+
+        function clearAll() {
+            if (accounts.length === 0) {
+                showAlert('Нет аккаунтов для очистки', 'warning');
+                return;
+            }
             
-            try {
-                await fetch(`${API_URL}/clear`, { method: 'POST' });
-                addLog('🗑 Все аккаунты удалены', 'info');
-                loadAccounts();
-            } catch (error) {
-                addLog('Ошибка при очистке', 'error');
+            if (confirm(`Удалить ВСЕ ${accounts.length} аккаунтов? Это действие нельзя отменить!`)) {
+                accounts = [];
+                localStorage.removeItem(CONFIG.storageKey);
+                updateUI();
+                addLog('Все аккаунты удалены', 'warning');
+                showAlert('Все аккаунты удалены', 'warning');
             }
         }
-        
-        // Добавление записи в лог
-        function addLog(message, type = 'info') {
-            const container = document.getElementById('logContainer');
-            const entry = document.createElement('div');
-            entry.className = `log-entry log-${type}`;
-            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
-            container.appendChild(entry);
-            container.scrollTop = container.scrollHeight;
+
+        // =================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===================
+        function getDomain(service) {
+            const domains = {
+                'yahoo': 'yahoo.com',
+                'proton': 'protonmail.com',
+                'test': 'testmail.com'
+            };
+            return domains[service] || 'example.com';
         }
-        
-        // Инициализация
-        window.onload = function() {
-            checkServer();
-            loadAccounts();
-            addLog('Система инициализирована. Готов к регистрации.', 'info');
-        };
+
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function addLog(message, type = 'info') {
+            const logEntry = {
+                time: new Date().toLocaleTimeString(),
+                message: message,
+                type: type
+            };
+            
+            logs.unshift(logEntry); // Добавляем в начало
+            if (logs.length > 50) logs.pop(); // Ограничиваем
+            
+            // Обновляем интерфейс
+            updateLogsUI();
+            saveLogsToStorage();
+        }
+
+        function showAlert(message, type = 'info') {
+            // Создаем уведомление
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <i class="fas fa-${getAlertIcon(type)}"></i>
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()">&times;</button>
+            `;
+            
+            // Добавляем на страницу
+            document.body.appendChild(alert);
+            
+            // Удаляем через 5 секунд
+            setTimeout(() => {
+                if (alert.parentElement) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        function getAlertIcon(type) {
+            const icons = {
+                'success': 'check-circle',
+                'error': 'exclamation-circle',
+                'warning': 'exclamation-triangle',
+                'info': 'info-circle'
+            };
+            return icons[type] || 'info-circle';
+        }
+
+        // =================== UI ФУНКЦИИ ===================
+        function updateUI() {
+            // Обновляем счетчик
+            document.getElementById('accountCount').textContent = accounts.length;
+            
+            // Обновляем список аккаунтов
+            const accountsList = document.getElementById('accountsList');
+            
+            if (accounts.length === 0) {
+                accountsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>Здесь появятся созданные аккаунты</p>
+                    </div>
+                `;
+            } else {
+                accountsList.innerHTML = accounts.map(account => `
+                    <div class="account-item">
+                        <div class="account-header">
+                            <span class="account-email">${account.email}</span>
+                            <span class="account-service">${account.service}</span>
+                        </div>
+                        <div class="account-details">
+                            <span><i class="fas fa-calendar"></i> ${account.created}</span>
+                            <span><i class="fas fa-envelope"></i> ${account.messages.length} писем</span>
+                            <button class="btn-small" onclick="viewAccount('${account.id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function updateLogsUI() {
+            const logContainer = document.getElementById('logContainer');
+            logContainer.innerHTML = logs.map(log => `
+                <div class="log-entry ${log.type}">
+                    <i class="fas fa-${getLogIcon(log.type)}"></i>
+                    <span>[${log.time}] ${log.message}</span>
+                </div>
+            `).join('');
+        }
+
+        function getLogIcon(type) {
+            const icons = {
+                'success': 'check-circle',
+                'error': 'times-circle',
+                'warning': 'exclamation-triangle',
+                'info': 'info-circle'
+            };
+            return icons[type] || 'info-circle';
+        }
+
+        function updateSiteUrl() {
+            const url = window.location.href;
+            document.getElementById('siteUrl').textContent = url;
+        }
+
+        function viewAccount(id) {
+            const account = accounts.find(acc => acc.id === id);
+            if (account) {
+                showAlert(`Аккаунт: ${account.email}`, 'info');
+            }
+        }
+
+        // =================== ХРАНЕНИЕ ДАННЫХ ===================
+        function loadFromStorage() {
+            try {
+                const savedAccounts = localStorage.getItem(CONFIG.storageKey);
+                const savedLogs = localStorage.getItem(CONFIG.logsKey);
+                
+                if (savedAccounts) {
+                    accounts = JSON.parse(savedAccounts);
+                }
+                
+                if (savedLogs) {
+                    logs = JSON.parse(savedLogs);
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки из localStorage:', error);
+            }
+        }
+
+        function saveToStorage() {
+            try {
+                localStorage.setItem(CONFIG.storageKey, JSON.stringify(accounts));
+            } catch (error) {
+                console.error('Ошибка сохранения в localStorage:', error);
+            }
+        }
+
+        function saveLogsToStorage() {
+            try {
+                localStorage.setItem(CONFIG.logsKey, JSON.stringify(logs));
+            } catch (error) {
+                console.error('Ошибка сохранения логов:', error);
+            }
+        }
+
+        // =================== ОБРАБОТЧИКИ СОБЫТИЙ ===================
+        function setupEventListeners() {
+            // Слайдер задержки
+            const delaySlider = document.getElementById('delay');
+            const delayValue = document.getElementById('delayValue');
+            
+            delaySlider.addEventListener('input', function() {
+                delayValue.textContent = this.value + ' сек';
+            });
+            
+            // Нажатие Enter в полях
+            document.getElementById('username').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') startRegistration();
+            });
+            
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') startRegistration();
+            });
+        }
     </script>
 </body>
 </html>
